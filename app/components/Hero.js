@@ -38,19 +38,23 @@ export default function Hero() {
           </p>
 
           {/* Tagline with typewriter */}
-          <div className="min-h-[4rem] mb-10 w-full">
+          <div className="min-h-[4rem] mb-10 w-full flex justify-center md:justify-start">
             {showTagline && (
-              <p className="font-[family-name:var(--font-body)] text-text-main text-sm md:text-base italic typewriter-text max-w-lg leading-relaxed md:mx-0 mx-auto">
-                &quot;Crafting pixel-perfect interfaces, one block at a time.&quot;
-              </p>
+              <div className="relative w-fit">
+                {/* Ghost text to set the container width */}
+                <p className="font-[family-name:var(--font-body)] text-sm md:text-base italic invisible whitespace-nowrap">
+                  &quot;Crafting pixel-perfect interfaces, one block at a time.&quot;
+                </p>
+                {/* Actual animated text */}
+                <p className="absolute top-0 left-0 font-[family-name:var(--font-body)] text-text-main text-sm md:text-base italic typewriter-text whitespace-nowrap">
+                  &quot;Crafting pixel-perfect interfaces, one block at a time.&quot;
+                </p>
+              </div>
             )}
           </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-            <a href="/CV.pdf" target="_blank" rel="noopener noreferrer" className="pixel-btn">
-              Download CV
-            </a>
             <a href="#projects" className="pixel-btn pixel-btn-outline">
               <span className="text-accent mr-2">{"< >"}</span> View Projects
             </a>
@@ -93,14 +97,28 @@ export default function Hero() {
           
           {/* Wrapper for Avatar and Bulbasaur to keep them together */}
           <div className="relative inline-block mt-4 md:mt-0">
-            {/* Container bulat dengan warna mirip frame custom */}
-            <div className="relative w-56 h-56 md:w-72 md:h-72 rounded-full border-[6px] border-border ring-[10px] ring-primary ring-inset shadow-[inset_0_0_0_14px_var(--border-color),8px_8px_0_var(--shadow-color)] overflow-hidden group bg-section-alt cursor-pointer rotate-3 transition-transform duration-300 hover:rotate-0">
-              <PixelRevealCanvas 
-                srcPixel="/avatar-pixel.png" 
-                srcReal="/avatar-real.jpeg" 
-                gridSize={12} 
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+            {/* Pixel Art Circular Portrait Frame */}
+            <div className="relative filter drop-shadow-[8px_8px_0_var(--shadow-color)] group cursor-pointer transition-transform duration-300 hover:-translate-y-2">
+              <div 
+                className="relative w-56 h-56 md:w-64 md:h-64 bg-border p-[6px] md:p-2"
+                style={{
+                  clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)"
+                }}
+              >
+                <div 
+                  className="w-full h-full relative overflow-hidden bg-section-alt"
+                  style={{
+                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)"
+                  }}
+                >
+                  <PixelRevealCanvas 
+                    srcPixel="/avatar-pixel.png" 
+                    srcReal="/avatar-real.jpeg" 
+                    gridSize={12} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Bulbasaur Pixel Sprite - Di dekat frame */}

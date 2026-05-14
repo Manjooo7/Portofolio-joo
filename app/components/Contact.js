@@ -9,6 +9,7 @@ export default function Contact() {
   const [visible, setVisible] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [confetti, setConfetti] = useState([]);
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.15 });
@@ -16,15 +17,56 @@ export default function Contact() {
     return () => obs.disconnect();
   }, []);
 
+  const spawnConfetti = () => {
+    const particles = [];
+    const colors = ["var(--accent)", "var(--primary)", "#FFD700", "#FF6B6B", "#4ECDC4"];
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        id: i,
+        x: 50 + (Math.random() - 0.5) * 60,
+        y: Math.random() * 40 + 20,
+        size: 4 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        delay: Math.random() * 0.5,
+        duration: 1 + Math.random() * 1.5,
+      });
+    }
+    setConfetti(particles);
+    setTimeout(() => setConfetti([]), 3000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    spawnConfetti();
+    setTimeout(() => setSubmitted(false), 4000);
     setFormData({ name: "", email: "", message: "" });
   };
 
   return (
-    <section id="contact" ref={ref} className="py-24 px-6 bg-section-alt">
+    <section id="contact" ref={ref} className="py-24 px-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-section-alt z-[-2]" />
+      {/* Confetti Overlay */}
+      {confetti.length > 0 && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          {confetti.map((p) => (
+            <div
+              key={p.id}
+              className="absolute"
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                backgroundColor: p.color,
+                animation: `confettiFall ${p.duration}s ease-in ${p.delay}s forwards`,
+                imageRendering: "pixelated",
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto">
         <SectionTitle>CONTACT ME</SectionTitle>
 
@@ -38,7 +80,23 @@ export default function Contact() {
         </div>
 
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 ${visible ? "animate-fadeInUp" : "opacity-0"}`} style={{ animationDelay: "0.2s" }}>
-          <form onSubmit={handleSubmit} className="pixel-card p-6 md:p-8 space-y-5 h-fit">
+          <form onSubmit={handleSubmit} className="pixel-card p-6 md:p-8 space-y-5 h-fit relative">
+            {/* Success Overlay */}
+            {submitted && (
+              <div className="absolute inset-0 bg-surface/95 z-10 flex flex-col items-center justify-center gap-4 border-[3px] border-accent">
+                <div className="text-4xl animate-bounce-slow">🎉</div>
+                <p className="font-[family-name:var(--font-pixel)] text-accent text-sm tracking-wider">
+                  MESSAGE SENT!
+                </p>
+                <p className="font-[family-name:var(--font-pixel)] text-primary text-[0.5rem] tracking-wider">
+                  +10 EXP GAINED
+                </p>
+                <div className="h-3 w-32 bg-section-alt border-2 border-border overflow-hidden mt-2">
+                  <div className="h-full bg-accent animate-[expBar_1s_ease-out_forwards]" />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="font-[family-name:var(--font-pixel)] text-text-main text-[0.5rem] tracking-wider block mb-2">NAME</label>
               <input
@@ -73,7 +131,7 @@ export default function Contact() {
             </div>
             <div className="pt-2">
               <button type="submit" className="pixel-btn w-full justify-center text-center">
-                {submitted ? "✓ SENT!" : "Send Message >>"}
+                Send Message &gt;&gt;
               </button>
             </div>
           </form>
@@ -82,6 +140,17 @@ export default function Contact() {
           <Comments />
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes confettiFall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes expBar {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+      `}</style>
     </section>
   );
 }

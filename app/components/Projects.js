@@ -228,12 +228,17 @@ export default function Projects() {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("projects");
+  const [certPage, setCertPage] = useState(0);
+  const certsPerPage = 4;
+  const totalCertPages = Math.ceil(certificates.length / certsPerPage);
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+
+  const pagedCerts = certificates.slice(certPage * certsPerPage, (certPage + 1) * certsPerPage);
 
   return (
     <section id="projects" ref={ref} className="py-24 px-6">
@@ -245,7 +250,7 @@ export default function Projects() {
           {tabs.map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => { setActiveTab(tab.key); setCertPage(0); }}
               className={`pixel-btn pixel-btn-small ${activeTab === tab.key
                 ? ""
                 : "pixel-btn-outline"
@@ -265,9 +270,46 @@ export default function Projects() {
           )}
 
           {activeTab === "certificates" && (
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {certificates.map((c) => (<CertificateCard key={c.title} cert={c} />))}
-            </div>
+            <>
+              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {pagedCerts.map((c) => (<CertificateCard key={c.title} cert={c} />))}
+              </div>
+
+              {/* Pagination */}
+              {totalCertPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-10">
+                  <button
+                    onClick={() => setCertPage(Math.max(0, certPage - 1))}
+                    disabled={certPage === 0}
+                    className={`pixel-btn pixel-btn-small pixel-btn-outline ${certPage === 0 ? "opacity-30 pointer-events-none" : ""}`}
+                  >
+                    ◀ PREV
+                  </button>
+                  <div className="flex items-center gap-2">
+                    {[...Array(totalCertPages)].map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCertPage(i)}
+                        className="w-8 h-8 border-2 border-border flex items-center justify-center font-[family-name:var(--font-pixel)] text-[0.5rem] transition-colors"
+                        style={{
+                          backgroundColor: certPage === i ? "var(--primary)" : "var(--surface)",
+                          color: certPage === i ? "var(--surface)" : "var(--text-main)",
+                        }}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCertPage(Math.min(totalCertPages - 1, certPage + 1))}
+                    disabled={certPage === totalCertPages - 1}
+                    className={`pixel-btn pixel-btn-small pixel-btn-outline ${certPage === totalCertPages - 1 ? "opacity-30 pointer-events-none" : ""}`}
+                  >
+                    NEXT ▶
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

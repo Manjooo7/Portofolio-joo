@@ -9,6 +9,11 @@ import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import CursorTrail from "./components/CursorTrail";
+import KonamiEasterEgg from "./components/KonamiEasterEgg";
+import PixelDivider from "./components/PixelDivider";
+import BGMPlayer from "./components/BGMPlayer";
+import PixelClouds from "./components/PixelClouds";
 
 export default function Home() {
   const [gameStarted, setGameStarted] = useState(false);
@@ -23,6 +28,7 @@ export default function Home() {
           gameStarted ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
+        <PixelClouds />
         <Navbar />
         <main>
           <Hero />
@@ -33,6 +39,9 @@ export default function Home() {
         </main>
         <Footer />
       </div>
+      <CursorTrail />
+      <KonamiEasterEgg />
+      <BGMPlayer />
     </>
   );
 }
