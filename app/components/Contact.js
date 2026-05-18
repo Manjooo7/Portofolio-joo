@@ -9,6 +9,8 @@ export default function Contact() {
   const [visible, setVisible] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const [confetti, setConfetti] = useState([]);
 
   useEffect(() => {
@@ -35,8 +37,34 @@ export default function Contact() {
     setTimeout(() => setConfetti([]), 3000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
+    setSendError("");
+
+    const response = await fetch("https://formsubmit.co/ajax/slmnalfrs0705@gmail.com", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        _subject: `Portfolio message from ${formData.name}`,
+        _template: "table",
+        _captcha: "false",
+      }),
+    });
+
+    setIsSending(false);
+
+    if (!response.ok) {
+      setSendError("Message failed to send. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
     spawnConfetti();
     setTimeout(() => setSubmitted(false), 4000);
@@ -129,9 +157,12 @@ export default function Contact() {
                 required
               />
             </div>
+            {sendError && (
+              <p className="text-xs text-red-600 font-bold">{sendError}</p>
+            )}
             <div className="pt-2">
-              <button type="submit" className="pixel-btn w-full justify-center text-center">
-                Send Message &gt;&gt;
+              <button type="submit" disabled={isSending} className="pixel-btn w-full justify-center text-center disabled:opacity-60 disabled:cursor-not-allowed">
+                {isSending ? "Sending..." : "Send Message >>"}
               </button>
             </div>
           </form>
